@@ -9,6 +9,7 @@ They deal about several things, from visualisation to machine learning.
 * Kaggle : **CDiscount Image Classifier**
 * Perso : **GPS trajectory forecast**
 * School : **Email receiver prediction**
-* Kaggle : **Email receiver prediction** (continuation)
+* Kaggle : **Email receiver prediction** (en cours)
+* Perso : **Bike stations API** (en cours)
 
 And many others to come ...

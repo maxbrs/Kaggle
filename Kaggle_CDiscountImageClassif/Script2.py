@@ -22,6 +22,7 @@ from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense, Activation
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D, GlobalAveragePooling2D
+from keras.optimizers import SGD
 
 import tensorflow as tf
 sess = tf.InteractiveSession()
@@ -53,7 +54,7 @@ keras.__version__, tf.__version__
 
 
 
-data_dir = "C:/Users/mbriens/Documents/Kaggle/Competition_CDiscount/Files/"
+data_dir = "C:/Users/mbriens/Documents/Kaggle/Kaggle_CDiscountImageClassif/Files/"
 
 train_bson_path = os.path.join(data_dir, "train.bson")
 num_train_products = 7069896
@@ -352,21 +353,41 @@ categories_df.loc[cat_id]
 
 
 model = Sequential()
-model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(180, 180, 3)))
-model.add(MaxPooling2D())
-model.add(Dropout(0.2))
-model.add(Conv2D(64, 3, padding="same", activation="relu"))
-model.add(MaxPooling2D())
-model.add(Dropout(0.2))
-model.add(Conv2D(128, 3, padding="same", activation="relu"))
-model.add(MaxPooling2D())
-model.add(Dropout(0.2))
-model.add(GlobalAveragePooling2D())
-model.add(Dense(num_classes, activation="softmax"))
-model.compile(optimizer="adam",
-              loss="categorical_crossentropy",
-              metrics=["accuracy"])
+# input: 100x100 images with 3 channels -> (180, 180, 3) tensors.
+# this applies 32 convolution filters of size 3x3 each.
+model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(180, 180, 3)))
+#model.add(Conv2D(32, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+#model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(150, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax'))
+sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+model.compile(loss='categorical_crossentropy', metrics=["accuracy"], optimizer=sgd)
 model.summary()
+
+
+#model = Sequential()
+#model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(180, 180, 3)))
+#model.add(MaxPooling2D())
+#model.add(Dropout(0.2))
+#model.add(Conv2D(64, 3, padding="same", activation="relu"))
+#model.add(MaxPooling2D())
+#model.add(Dropout(0.2))
+#model.add(Conv2D(128, 3, padding="same", activation="relu"))
+#model.add(MaxPooling2D())
+#model.add(Dropout(0.2))
+#model.add(GlobalAveragePooling2D())
+#model.add(Dense(num_classes, activation="softmax"))
+#model.compile(optimizer="adam",
+#              loss="categorical_crossentropy",
+#              metrics=["accuracy"])
+#model.summary()
 
 #filters = 64
 #pool_size = 4
@@ -401,14 +422,14 @@ model.summary()
 
 
 model.fit_generator(train_gen,
-                    steps_per_epoch = 50,   #num_train_images // batch_size,
-                    epochs = 5,
+                    steps_per_epoch = 2500,   #num_train_images // batch_size,
+                    epochs = 100,
                     validation_data = val_gen,
-                    validation_steps = 50,  #num_val_images // batch_size,
+                    validation_steps = 2500,  #num_val_images // batch_size,
                     workers = 8)
 
 loss, train_acc = model.evaluate_generator(train_gen,
-                                     steps = 50, #num_val_images // batch_size,
+                                     steps = 2500, #num_val_images // batch_size,
                                      max_queue_size=10,
                                      workers=8)
 print('The accuracy on the train set is ', (train_acc*100),'%')
