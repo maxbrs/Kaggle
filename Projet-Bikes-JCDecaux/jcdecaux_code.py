@@ -9,6 +9,7 @@ from plotly.graph_objs import *
 
 key = '72d83c21b53f2244a0256c83ea58b355f2eba304'
 city = 'Toulouse'
+# Dublin, Lyon, Nantes, Marseille, Stockholm, Luxembourg
 get_url = 'https://api.jcdecaux.com/vls/v1/stations?contract='+city+'&apiKey='+key
 
 r = requests.get(get_url)
@@ -43,11 +44,6 @@ for station in data:
     number.append(station['number'])
     status.append(station['status'])
     time.append(datetime.fromtimestamp(int(str(station['last_update'])[:-3])).strftime('%Y-%m-%d %H:%M:%S'))
-
-
-
-
-
 
 
 
