@@ -40,34 +40,29 @@ def import_daily_jsons(path_source):
     # Initialisation
     article = {}
     # Get today directory
-    today = datetime.now().strftime('%Y-%m-%d')
-    dates_ls = listdir(path_source)
-    try:
-        path_source += ('/' + today)
-    except OSError as ioex:
-        print('errno:', ioex.errno)
-        print("No Directory found today, sorry!")
-        sys.exit(1)
-    newspaper_ls = listdir(path_source)
-    # Loop: For each inewspaper
-    for inewspaper in newspaper_ls:
-        # management of hidden repositories: required on macOS (.ds_store)
-        if not inewspaper.startswith('.'):
-            xdirpaper = path_source + '/' + inewspaper
-            files_ls = listdir(xdirpaper)
-            # progress bar for each newspaper repository
-            with tqdm(desc=inewspaper, total=len(files_ls)) as fbar:
-                # Loop: For each file
-                for ifile in files_ls:
-                    if not ifile.startswith('.'):
-                        iname = findall('^(.*?)_robot.json', ifile)[0]
-                        # Import Json
-                        with open(xdirpaper + '/' + ifile, 'r',
-                                  encoding='utf-8') as dict_robot:
-                            article[iname] = json.load(dict_robot)
-                    fbar.update()
-                    continue
-                    # End newspaper repository
-        continue
-    # End all newspapers
+    #today = datetime.now().strftime('%Y-%m-%d')
+    dates_ls = listdir(path_source)    
+    for date in dates_ls:
+        print('date : '+date)
+        newspaper_ls = listdir(path_source + '/' + date)
+        # Loop: For each inewspaper
+        for inewspaper in newspaper_ls:
+            # management of hidden repositories: required on macOS (.ds_store)
+            if not inewspaper.startswith('.'):
+                xdirpaper = path_source + '/' + date + '/' + inewspaper
+                files_ls = listdir(xdirpaper)
+                # progress bar for each newspaper repository
+                with tqdm(desc=inewspaper, total=len(files_ls)) as fbar:
+                    # Loop: For each file
+                    for ifile in files_ls:
+                        if not ifile.startswith('.'):
+                            iname = findall('^(.*?)_robot.json', ifile)[0]
+                            # Import Json
+                            with open(xdirpaper + '/' + ifile, 'r', encoding='utf-8') as dict_robot:
+                                article[iname] = json.load(dict_robot)
+                        fbar.update()
+                        continue
+                        # End newspaper repository
+            continue
+        # End all newspapers
     return article

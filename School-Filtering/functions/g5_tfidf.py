@@ -8,14 +8,8 @@ Created on Tue Jan  18 15:45:27 2018
 import numpy as np
 import pickle
 
-idf = pickle.load(
-    open(
-        '/var/www/html/projet2018/code/filtering/functions/lemma_idf.p',
-        'rb'))
-stop_words = pickle.load(
-    open(
-        '/var/www/html/projet2018/code/filtering/functions/stopwords.p',
-        'rb'))
+idf = pickle.load(open('./functions/lemma_idf.p','rb'))
+stop_words = pickle.load(open('./functions/stopwords.p','rb'))
 
 
 def tf(text_tok):

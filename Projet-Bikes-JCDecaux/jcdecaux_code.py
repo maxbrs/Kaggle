@@ -1,4 +1,5 @@
 
+import config
 import numpy as np
 import requests
 import json
@@ -7,7 +8,7 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 
 
-key = '72d83c21b53f2244a0256c83ea58b355f2eba304'
+key = config.jcdecaux_key
 city = 'Toulouse'
 # Dublin, Lyon, Nantes, Marseille, Stockholm, Luxembourg
 get_url = 'https://api.jcdecaux.com/vls/v1/stations?contract='+city+'&apiKey='+key
@@ -50,7 +51,7 @@ for station in data:
 
 
 
-mapbox_access_token = 'pk.eyJ1IjoibWF4YnJpZW5zIiwiYSI6ImNqY2wwODByZTAxNHgycW84dTVidDZpMnIifQ.3DYn5OUKqB4FJ3P0hic_yw'
+mapbox_access_token = config.mapbox_key
 data = Data([
     Scattermapbox(
         lat=lat,

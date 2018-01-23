@@ -12,9 +12,7 @@ import pickle
 from functions.g5_clean_text import clean_symbols
 from functions.g5_tokenize import tokeniz
 from functions.g5_handing_entity import handing_entity
-# stop_words = pickle.load(open('./functions/stopwords.p', 'rb'))
-stop_words = pickle.load(open('/var/www/html/projet2018/code/filtering/' +
-                              'functions/stopwords.p', 'rb'))
+stop_words = pickle.load(open('./functions/stopwords.p','rb'))
 
 """
 ============================================================================
@@ -23,12 +21,12 @@ stop_words = pickle.load(open('/var/www/html/projet2018/code/filtering/' +
 """
 
 # LINK ON SERVER
-path_source = '/var/www/html/projet2018/data/clean/robot'
-path_target = '/var/www/html/projet2018/data/clean/filtering'
+#path_source = '/var/www/html/projet2018/data/clean/robot'
+#path_target = '/var/www/html/projet2018/data/clean/filtering'
 
 # TEST LINK
-# path_source = '../Data/source_press_article'
-# path_target = '../Data/target_press_article'
+path_source = './data/source_press_article'
+path_target = './data/target_press_article'
 
 """
 ============================================================================
