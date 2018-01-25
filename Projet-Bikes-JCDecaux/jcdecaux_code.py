@@ -20,6 +20,10 @@ print(r.status_code)
 data = r.json()
 
 
+
+
+
+
 name = []
 lat = []
 lon = []

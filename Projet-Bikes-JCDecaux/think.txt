@@ -1,0 +1,17 @@
+number = dict['number'] = STATION.sta_number -> INT(5)
+city = dict['contract_name'] = STATION.sta_city -> VARCHAR(20)
+name = dict['name'] = STATION.sta_name ->  VARCHAR(50)
+address = dict['address'] = STATION.sta_address ->  VARCHAR(100)
+lat = dict['position']['lat'] = STATION.sta_lat -> NUMERIC(8)
+lon = dict['position']['lng'] = STATION.sta_lon -> NUMERIC(8)
+banking = dict['banking'] = STATION.sta_payment -> BOOL
+bonus = dict['bonus'] = STATION.sta_bonus -> BOOL
++ STATION.sta_ID INT(10) AUTO_INCREMENT
+
+status = dict['status'] = BIKE.bik_status -> enum('CLOSED','OPEN')
+bike_stands = dict['bike_stands'] = BIKE.bik_stands -> INT(4)
+available_bike_stands = dict['available_bike_stands'] = BIKE.bik_available_stands -> INT(4)
+available_bikes = dict['available_bikes'] = BIKE.bik_available -> INT(4)
+time = dict['last_update'] = BIKE.bik_timestamp -> DATETIME
++ BIKE.bik_ID INT(10) AUTO_INCREMENT,
++ BIKE.bik_sta_ID INT(10) FOREIGN KEY

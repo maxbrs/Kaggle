@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask.ext.mysqldb import MySQL
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ def index():
 		results.append(i)
 	return jsonify({'tables': results})
 
-@app.route('/getall_bike', methods = ['GET'])
+@app.route('/getall_bike/', methods = ['GET'])
 def getall_bike():
 	cur = mysql.connection.cursor()
 	cur.execute('''SELECT * FROM BIKE''')
@@ -36,7 +36,7 @@ def getall_bike():
 						'bik_available': i[6]})
 	return jsonify({'bike': results})
 
-@app.route('/getall_station', methods = ['GET'])
+@app.route('/getall_station/', methods = ['GET'])
 def getall_station():
 	cur = mysql.connection.cursor()
 	cur.execute('''SELECT * FROM STATION''')
@@ -53,6 +53,38 @@ def getall_station():
 						'sta_payment': i[7],
 						'sta_bonus': i[8],})
 	return jsonify({'station': results})
+
+
+@app.route('/post_station/', methods = ['POST'])
+def add_station():
+	data = request.get_json()
+	for each in data:
+		name = each['name']
+		lat = each['position']['lat']
+		lon = each['position']['lng']
+		address = each['address']
+		available_bike_stands = each['available_bike_stands']
+		available_bikes = each['available_bikes']
+		banking = each['banking']
+		bonus = each['bonus']
+		bike_stands = each['bike_stands']
+		city = each['contract_name']
+		number = each['number']
+		status = each['status']
+		time = datetime.fromtimestamp(int(str(each['last_update'])[:-3])).strftime('%Y-%m-%d %H:%M:%S')
+		#try : 
+		call_bikestation(name, lat, lon, address, available_bike_stands, available_bikes, banking, bonus, bike_stands, city, number, status, time)
+		#except: 
+		#	print('Unable to insert word')
+
+
+def call_bikestation(name, lat, lon, address, available_bike_stands, available_bikes, banking, bonus, bike_stands, city, number, status, time):
+    	query = "CALL ADD_BIKE_STATION("+str(name)+"," + int(lat)+","+int(lon)+","+str(address)+","+int(available_bike_stands)+","+int(available_bikes)+","+bool(banking)+","+bool(bonus)+","+int(bike_stands)+","+str(city)+","+int(number)+","+str(status)+","+str(time)+");"  
+	#cursor = db.cursor()
+	cursor.execute(query)
+
+
+
 
 # @app.route('/addone/<string:insert>')
 # def add(insert):
