@@ -68,7 +68,7 @@ layout = Layout(
     autosize=True,
     hovermode='closest',
     mapbox=dict(
- #       accesstoken=mapbox_access_token,
+        accesstoken=mapbox_access_token,
         bearing=0,
         center=dict(
             lat=np.mean(lat),
@@ -84,6 +84,28 @@ py.iplot(fig, filename='Multiple Mapbox')
 
 
 # Cf. https://plot.ly/~maxbriens/0/
+
+
+
+
+
+
+
+
+from flask import jsonify
+import datetime
+
+res = ((1, 1, datetime.date(1984, 9, 10), 'CLOSED', 5, 2, 3), (2, 1, datetime.date(2015, 1, 3), 'OPEN', 15, 15, 3), (3, 1, datetime.date(2013, 11, 13), 'OPEN', 15, 15, 3), (4, 1, datetime.date(2016, 5, 21), 'CLOSED', 15, 15, 3))
+
+js = []
+for i in res:
+    js.append({'bik_ID': i[0],
+               'bik_sta_ID': i[1],
+               'bik_timestamp': i[2],
+               'bik_status': i[3],
+               'bik_stands': i[4],
+               'bik_available_stands': i[5],
+               'bik_available': i[6]})
 
 
 
