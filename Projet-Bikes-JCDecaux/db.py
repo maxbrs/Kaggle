@@ -1,5 +1,9 @@
 from flask import Flask, jsonify, request
-from flask.ext.mysqldb import MySQL
+from flask_mysqldb import MySQL
+import MySQLdb
+from datetime import datetime
+import json
+import re
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
@@ -34,7 +38,18 @@ def getall_bike():
 						'bik_stands': i[4],
 						'bik_available_stands': i[5],
 						'bik_available': i[6]})
-	return jsonify({'bike': results})
+	return jsonify({'nb_records': len(results),
+					'bike': results})
+
+@app.route('/getall_city/', methods = ['GET'])
+def getall_city():
+	cur = mysql.connection.cursor()
+	cur.execute('''SELECT count(distinct sta_city) FROM STATION''')
+	nb_cities = cur.fetchone()
+	cur.execute('''SELECT distinct sta_city FROM STATION''')
+	val = cur.fetchall()
+	return jsonify({'nb_cities': nb_cities,
+					'cities': val})
 
 @app.route('/getall_station/', methods = ['GET'])
 def getall_station():
@@ -52,60 +67,46 @@ def getall_station():
 						'sta_address': i[6],
 						'sta_payment': i[7],
 						'sta_bonus': i[8],})
-	return jsonify({'station': results})
+	return jsonify({'nb_records': len(results),
+					'station': results})
 
 
-@app.route('/post_station/', methods = ['POST'])
-def add_station():
-	data = request.get_json()
+@app.route('/post_bikedata/', methods = ['POST'])
+def add_bikedata():
+	data = request.get_json()#force = True
+	data = json.loads(data)
+	#print(type(data))
+	#print(data[0])
 	for each in data:
-		name = each['name']
+		name = each['name'].replace('\'', ' ')
 		lat = each['position']['lat']
 		lon = each['position']['lng']
-		address = each['address']
+		address = each['address'].replace('\'', ' ')
 		available_bike_stands = each['available_bike_stands']
 		available_bikes = each['available_bikes']
 		banking = each['banking']
 		bonus = each['bonus']
 		bike_stands = each['bike_stands']
-		city = each['contract_name']
+		city = each['contract_name'].replace('\'', ' ')
 		number = each['number']
 		status = each['status']
 		time = datetime.fromtimestamp(int(str(each['last_update'])[:-3])).strftime('%Y-%m-%d %H:%M:%S')
-		#try : 
-		call_bikestation(name, lat, lon, address, available_bike_stands, available_bikes, banking, bonus, bike_stands, city, number, status, time)
-		#except: 
-		#	print('Unable to insert word')
-
+		try :
+			call_bikestation(name, lat, lon, address, available_bike_stands, available_bikes, banking, bonus, bike_stands, city, number, status, time)
+			print('Insert done')
+		except:
+			print('Unable to insert data')
+			print("CALL ADD_BIKE_STATION('"+str(name)+"'," + str(lat)+","+str(lon)+",'"+str(address)+"',"+str(available_bike_stands)+","+str(available_bikes)+","+str(banking)+","+str(bonus)+","+str(bike_stands)+",'"+str(city)+"',"+str(number)+",'"+str(status)+"','"+str(time)+"');")
+	query = "COMMIT ;"
+	cur = mysql.connection.cursor()
+	cur.execute(query)
+	return 'DONE !'
 
 def call_bikestation(name, lat, lon, address, available_bike_stands, available_bikes, banking, bonus, bike_stands, city, number, status, time):
-    	query = "CALL ADD_BIKE_STATION("+str(name)+"," + int(lat)+","+int(lon)+","+str(address)+","+int(available_bike_stands)+","+int(available_bikes)+","+bool(banking)+","+bool(bonus)+","+int(bike_stands)+","+str(city)+","+int(number)+","+str(status)+","+str(time)+");"  
-	#cursor = db.cursor()
-	cursor.execute(query)
-
-
-
-
-# @app.route('/addone/<string:insert>')
-# def add(insert):
-# 	cur = mysql.connection.cursor()
-# 	cur.execute('''SELECT MAX(id) FROM STATION''')
-# 	maxid = cur.fetchone()
-# 	cur.execute('''INSERT INTO BIKE (bik_sta_ID, bik_timestamp, bik_status, bik_stands, bik_available_stands, bik_available) VALUES (%s, %s, %s, %s, %s, %s)''', (maxid))
-# 	mysql.connection.commit()
-# 	return "Done"
+	#print("CALL ADD_BIKE_STATION('"+str(name)+"'," + str(lat)+","+str(lon)+",'"+str(address)+"',"+str(available_bike_stands)+","+str(available_bikes)+","+str(banking)+","+str(bonus)+","+str(bike_stands)+",'"+str(city)+"',"+str(number)+",'"+str(status)+"','"+str(time)+"');")
+	query = "CALL ADD_BIKE_STATION('"+str(name)+"'," + str(lat)+","+str(lon)+",'"+str(address)+"',"+str(available_bike_stands)+","+str(available_bikes)+","+str(banking)+","+str(bonus)+","+str(bike_stands)+",'"+str(city)+"',"+str(number)+",'"+str(status)+"','"+str(time)+"');"
+	cur = mysql.connection.cursor()
+	cur.execute(query)
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
+	app.run(debug=True)
