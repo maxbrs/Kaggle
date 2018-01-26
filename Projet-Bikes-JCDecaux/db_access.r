@@ -13,6 +13,7 @@ setwd("C:/Users/mbriens/Documents/Kaggle/GIT/Kaggle/Projet-Bikes-JCDecaux")
 ############################
 
 # Cf. https://www.r-bloggers.com/accessing-mysql-through-r/
+# Cf. https://www.statmethods.net/advstats/timeseries.html
 
 
 
@@ -35,7 +36,7 @@ dbListTables(mydb)
 dbListFields(mydb, 'bike')
 
 # Extract data from SQL query
-query = dbSendQuery(mydb, "SELECT count(bik_id) as nb_records FROM bike")
+query = dbSendQuery(mydb, "SELECT bik_timestamp FROM bike")
 data = fetch(query, n=-1)
 print(data)
 

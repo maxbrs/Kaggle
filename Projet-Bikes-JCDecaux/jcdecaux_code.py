@@ -9,21 +9,26 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 
 
-for i in range(6):
-    print(str(i*5) + ' min since START')
+laps = 10
+length = 60
+for i in range(int(length/laps)):
+    print(str(i*laps) + ' min since START')
     key = config.jcdecaux_key
     response = []
     for city in ('Toulouse', 'Dublin', 'Lyon', 'Nantes', 'Marseille', 'Stockholm', 'Luxembourg'):
         print(city)
         get_url = 'https://api.jcdecaux.com/vls/v1/stations?contract='+city+'&apiKey='+key
-        r = requests.get(get_url)
-        print(r.status_code)
-        data = r.json()
-        data = json.dumps(data, ensure_ascii='False')
-        url_POS = 'http://localhost:5000/post_bikedata/'
-        headers = {'Content-Type': 'application/json'}
-        response.append(requests.post(url_POS, headers=headers, json=data))
-    time.sleep(60*5)
+        try:
+            r = requests.get(get_url)
+            print(r.status_code)
+            data = r.json()
+            data = json.dumps(data, ensure_ascii='False')
+            url_POS = 'http://localhost:5000/post_bikedata/'
+            headers = {'Content-Type': 'application/json'}
+            response.append(requests.post(url_POS, headers=headers, json=data))
+        except:
+            print('JCDecaux API unreachable')
+    time.sleep(60*laps)
 
 
 
