@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import config
 import numpy as np
@@ -9,8 +10,8 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 
 
-laps = 10
-length = 60
+laps = 15
+length = 120
 for i in range(int(length/laps)):
     print(str(i*laps) + ' min since START')
     key = config.jcdecaux_key
@@ -31,55 +32,33 @@ for i in range(int(length/laps)):
     time.sleep(60*laps)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-mapbox_access_token = config.mapbox_key
-data = Data([
-    Scattermapbox(
-        lat=lat,
-        lon=lon,
-        mode='markers',
-        marker=Marker(
-            size=9
-        ),
-        text=name,
-    )
-])
-
-layout = Layout(
-    autosize=True,
-    hovermode='closest',
-    mapbox=dict(
-        accesstoken=mapbox_access_token,
-        bearing=0,
-        center=dict(
-            lat=np.mean(lat),
-            lon=-np.mean(lon)
-        ),
-        pitch=0,
-        zoom=10
-    ),
-)
-
-fig = dict(data=data, layout=layout)
-py.iplot(fig, filename='Multiple Mapbox')
-
+# mapbox_access_token = config.mapbox_key
+# data = Data([
+#     Scattermapbox(
+#         lat=lat,
+#         lon=lon,
+#         mode='markers',
+#         marker=Marker(
+#             size=9
+#         ),
+#         text=name,
+#     )
+# ])
+# layout = Layout(
+#     autosize=True,
+#     hovermode='closest',
+#     mapbox=dict(
+#         accesstoken=mapbox_access_token,
+#         bearing=0,
+#         center=dict(
+#             lat=np.mean(lat),
+#             lon=-np.mean(lon)
+#         ),
+#         pitch=0,
+#         zoom=10
+#     ),
+# )
+# fig = dict(data=data, layout=layout)
+# py.iplot(fig, filename='Multiple Mapbox')
 
 # Cf. https://plot.ly/~maxbriens/0/
-
-
-
-
-
-
-

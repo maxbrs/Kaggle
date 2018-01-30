@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 from flask import Flask, jsonify, request
 from flask_mysqldb import MySQL
 import MySQLdb
@@ -69,7 +72,6 @@ def getall_station():
 						'sta_bonus': i[8],})
 	return jsonify({'nb_records': len(results),
 					'station': results})
-
 
 @app.route('/post_bikedata/', methods = ['POST'])
 def add_bikedata():
