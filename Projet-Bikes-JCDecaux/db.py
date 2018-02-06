@@ -13,7 +13,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'admin'
 app.config['MYSQL_PORT'] = 5005
-app.config['MYSQL_DB'] = 'bikestations'
+app.config['MYSQL_DB'] = 'BikeStations'
 mysql = MySQL(app)
 
 @app.route('/', methods = ['GET'])

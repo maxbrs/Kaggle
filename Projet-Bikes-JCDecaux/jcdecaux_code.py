@@ -10,10 +10,11 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 
 
-laps = 15
-length = 120
+laps = 30
+length = 60*24*20
 for i in range(int(length/laps)):
-    print(str(i*laps) + ' min since START')
+    print(str(i*laps/60) + ' hours since START')
+    print((str(i*laps/60)/24) + ' days since START')
     key = config.jcdecaux_key
     response = []
     for city in ('Toulouse', 'Dublin', 'Lyon', 'Nantes', 'Marseille', 'Stockholm', 'Luxembourg'):
@@ -29,7 +30,7 @@ for i in range(int(length/laps)):
             response.append(requests.post(url_POS, headers=headers, json=data))
         except:
             print('JCDecaux API unreachable')
-    time.sleep(60*laps)
+    time.sleep(laps*60)
 
 
 # mapbox_access_token = config.mapbox_key

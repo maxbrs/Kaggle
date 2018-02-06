@@ -56,8 +56,8 @@ ALTER TABLE BIKE
 -- CREATE PROCEDURE --
 ----------------------
 
-DELIMITER /
-DROP PROCEDURE IF EXISTS ADD_BIKE_STATION/
+DELIMITER $$
+DROP PROCEDURE IF EXISTS ADD_BIKE_STATION$$
 CREATE PROCEDURE ADD_BIKE_STATION
 	(IN v_name VARCHAR(100),
 	IN v_lat DECIMAL(20,15),
@@ -72,33 +72,28 @@ CREATE PROCEDURE ADD_BIKE_STATION
 	IN v_number INT(5),
 	IN v_status enum('CLOSED','OPEN'),
 	IN v_time DATETIME)
-
 BEGIN
 	DECLARE v_sta_ID INT;
 	DECLARE v_bik_ID INT;
-
 	SELECT sta_ID INTO v_sta_ID
 	FROM STATION
 	WHERE sta_city = v_city
 	AND sta_number = v_number;
-
-	IF (v_sta_ID IS NULL)  THEN
-		INSERT INTO STATION (sta_ID, sta_number, sta_lat, sta_lon, sta_name, sta_city, sta_address, sta_payment, sta_bonus) VALUES
-			(NULL, v_number, v_lat, v_lon, v_name, v_city, v_address, v_banking, v_bonus);
-		SELECT LAST_INSERT_ID() INTO v_sta_ID;
+	IF v_sta_ID IS NULL THEN
+	INSERT INTO STATION (sta_number, sta_lat, sta_lon, sta_name, sta_city, sta_address, sta_payment, sta_bonus)
+	VALUES(v_number, v_lat, v_lon, v_name, v_city, v_address, v_banking, v_bonus);
+	SELECT LAST_INSERT_ID() INTO v_sta_ID;
 	END IF;
-
 	SELECT bik_ID INTO v_bik_ID
 	FROM BIKE
 	WHERE bik_sta_ID = v_sta_ID
 	AND bik_timestamp = v_time;
-
-	IF (v_bik_ID IS NULL)  THEN
-		INSERT INTO BIKE (bik_ID, bik_sta_ID, bik_timestamp, bik_status, bik_stands, bik_available_stands, bik_available) VALUES
-			(NULL, v_sta_ID, v_time, v_status, v_bike_stands, v_available_bike_stands, v_available_bikes);
-		SELECT LAST_INSERT_ID() INTO v_bik_ID;
+	IF v_bik_ID IS NULL THEN
+	INSERT INTO BIKE (bik_sta_ID, bik_timestamp, bik_status, bik_stands, bik_available_stands, bik_available)
+	VALUES(v_sta_ID, v_time, v_status, v_bike_stands, v_available_bike_stands, v_available_bikes);
+	SELECT LAST_INSERT_ID() INTO v_bik_ID;
 	END IF;
-END/
+END$$
 DELIMITER ;
 
 -- --------------------------------------------------------
