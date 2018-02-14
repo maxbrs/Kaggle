@@ -10,6 +10,9 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 
 
+cities = ['Brisbane', 'Bruxelles-Capitale', 'Namur', 'Santander', 'Seville', 'Valence', 'Amiens', 'Besancon', 'Cergy-Pontoise', 'Creteil', 'Lyon', 'Marseille', 'Mulhouse', 'Nancy', 'Nantes', 'Rouen', 'Toulouse', 'Dublin', 'Toyama', 'Vilnius', 'Luxembourg', 'Lillestrom', 'Kazan', 'Goteborg', 'Lund', 'Stockholm', 'Ljubljana']
+
+
 laps = 30
 length = 60*24*20
 for i in range(int(length/laps)):
@@ -17,7 +20,7 @@ for i in range(int(length/laps)):
     print((str(i*laps/60)/24) + ' days since START')
     key = config.jcdecaux_key
     response = []
-    for city in ('Toulouse', 'Dublin', 'Lyon', 'Nantes', 'Marseille', 'Stockholm', 'Luxembourg'):
+    for city in cities:
         print(city)
         get_url = 'https://api.jcdecaux.com/vls/v1/stations?contract='+city+'&apiKey='+key
         try:

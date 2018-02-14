@@ -1,8 +1,12 @@
 debut <- Sys.time()
 
 library(RMySQL)
+library(leaflet)
+library(ggplot2)
+library(ggmap)
 
 setwd("C:/Users/mbriens/Documents/Kaggle/GIT/Kaggle/Projet-Bikes-JCDecaux")
+#setwd("C:/Users/mbriens/Documents/Kaggle/GIT/Kaggle/Projet-Bikes-JCDecaux/BikeStations")
 
 #----------------------------------------
 
@@ -36,12 +40,24 @@ dbListTables(mydb)
 dbListFields(mydb, 'bike')
 
 # Extract data from SQL query
-query = dbSendQuery(mydb, "SELECT bik_timestamp FROM bike")
+query = dbSendQuery(mydb, "SELECT * FROM station")
 data = fetch(query, n=-1)
 print(data)
 
 
+df = data[data$sta_city == "Toulouse",]
 
+#coord <- geocode("Toulouse")
+coord = data.frame(lat = 43.60465, lon = 1.444209)
+m <- leaflet(df) %>% setView(lng = coord$lon, lat = coord$lat, zoom = 12)
+m <- m %>% addProviderTiles(providers$Stamen, options = providerTileOptions(opacity = 0.25)) %>%
+  addProviderTiles(providers$Stamen.TonerLabels) %>%
+  addMarkers(~sta_lon, ~sta_lat, label = ~sta_name)
+print(m)
+
+
+
+plot(data$bik_timestamp)
 
 
 
