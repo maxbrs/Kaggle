@@ -6,7 +6,7 @@ library(ggplot2)
 library(ggmap)
 
 setwd("C:/Users/mbriens/Documents/Kaggle/GIT/Kaggle/Projet-Bikes-JCDecaux")
-#setwd("C:/Users/mbriens/Documents/Kaggle/GIT/Kaggle/Projet-Bikes-JCDecaux/BikeStations")
+# setwd("C:/Users/mbriens/Documents/Kaggle/GIT/Kaggle/Projet-Bikes-JCDecaux/BikeStations")
 
 #----------------------------------------
 
@@ -45,14 +45,14 @@ data = fetch(query, n=-1)
 print(data)
 
 
-df = data[data$sta_city == "Toulouse",]
+df = data#[data$sta_city == "Toulouse",]
 
 #coord <- geocode("Toulouse")
 coord = data.frame(lat = 43.60465, lon = 1.444209)
 m <- leaflet(df) %>% setView(lng = coord$lon, lat = coord$lat, zoom = 12)
 m <- m %>% addProviderTiles(providers$Stamen, options = providerTileOptions(opacity = 0.25)) %>%
   addProviderTiles(providers$Stamen.TonerLabels) %>%
-  addMarkers(~sta_lon, ~sta_lat, label = ~sta_name)
+  addMarkers(~sta_lon, ~sta_lat, label = ~sta_city)#sta_name)
 print(m)
 
 

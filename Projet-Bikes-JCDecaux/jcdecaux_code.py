@@ -17,7 +17,7 @@ laps = 30
 length = 60*24*20
 for i in range(int(length/laps)):
     print(str(i*laps/60) + ' hours since START')
-    print((str(i*laps/60)/24) + ' days since START')
+    #print((str(i*laps/60)/24) + ' days since START')
     key = config.jcdecaux_key
     response = []
     for city in cities:
