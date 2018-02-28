@@ -45,7 +45,7 @@ data = fetch(query, n=-1)
 print(data)
 
 
-df = data#[data$sta_city == "Toulouse",]
+df = data[data$sta_city == "Toulouse",]
 
 #coord <- geocode("Toulouse")
 coord = data.frame(lat = 43.60465, lon = 1.444209)
@@ -54,6 +54,19 @@ m <- m %>% addProviderTiles(providers$Stamen, options = providerTileOptions(opac
   addProviderTiles(providers$Stamen.TonerLabels) %>%
   addMarkers(~sta_lon, ~sta_lat, label = ~sta_city)#sta_name)
 print(m)
+
+
+
+
+
+query = dbSendQuery(mydb, "SELECT * FROM bike")
+data = fetch(query, n=-1)
+#print(data)
+
+df = data[data$bik_sta_ID == 12,]
+
+plot(as.Date(df$bik_timestamp), as.integer(df$bik_available))
+axis.Date(1, at = df$bik_timestamp, labels = format(df$bik_timestamp,"%b-%d"), las=2)
 
 
 
