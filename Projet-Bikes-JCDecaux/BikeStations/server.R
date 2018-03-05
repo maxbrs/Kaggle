@@ -14,14 +14,17 @@ library(ggmap)
 
 user = 'root'
 password = 'admin'
-database_name = 'bikestations'
+database_name = 'BikeStations'
 host = 'localhost'
 port = 5005
 
 mydb = dbConnect(MySQL(), user=user, password=password, dbname=database_name, host=host, port=port)
 query = dbSendQuery(mydb, "SELECT * FROM STATION")
 data = fetch(query, n=-1)
-list_cities = c('Brisbane', 'Bruxelles-Capitale', 'Namur', 'Santander', 'Seville', 'Valence', 'Amiens', 'Besancon', 'Cergy-Pontoise', 'Creteil', 'Lyon', 'Marseille', 'Mulhouse', 'Nancy', 'Nantes', 'Rouen', 'Toulouse', 'Dublin', 'Toyama', 'Vilnius', 'Luxembourg', 'Lillestrom', 'Kazan', 'Goteborg', 'Lund', 'Stockholm', 'Ljubljana')
+
+
+list_cities = c("Toulouse", "Dublin", "Lyon", "Nantes", "Marseille", "Stockholm", "Luxembourg")
+#list_cities = c('Brisbane', 'Bruxelles-Capitale', 'Namur', 'Santander', 'Seville', 'Valence', 'Amiens', 'Besancon', 'Cergy-Pontoise', 'Creteil', 'Lyon', 'Marseille', 'Mulhouse', 'Nancy', 'Nantes', 'Rouen', 'Toulouse', 'Dublin', 'Toyama', 'Vilnius', 'Luxembourg', 'Lillestrom', 'Kazan', 'Goteborg', 'Lund', 'Stockholm', 'Ljubljana')
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {

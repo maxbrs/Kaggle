@@ -59,9 +59,11 @@ shinyUI(
             actionButton("reset_button", "Reset view"),
             br(), br(),
             radioButtons("opt_choice", label = "Choose a city",
-              choices = list('Brisbane'=1, 'Bruxelles-Capitale'=2, 'Namur'=3, 'Santander'=4, 'Seville'=5, 'Valence'=6, 'Amiens'=7, 'Besancon'=8, 'Cergy-Pontoise'=9, 'Creteil'=10,
-                             'Lyon'=11, 'Marseille'=12, 'Mulhouse'=13, 'Nancy'=14, 'Nantes'=15, 'Rouen'=16, 'Toulouse'=17, 'Dublin'=18, 'Toyama'=19, 'Vilnius'=20,
-                             'Luxembourg'=21, 'Lillestrom'=22, 'Kazan'=23, 'Goteborg'=24, 'Lund'=25, 'Stockholm'=26, 'Ljubljana'=27),
+              
+              choices = list("Toulouse"=1, "Dublin"=2, "Lyon"=3, "Nantes"=4, "Marseille"=5, "Stockholm"=6, "Luxembourg"=7),
+              #choices = list('Brisbane'=1, 'Bruxelles-Capitale'=2, 'Namur'=3, 'Santander'=4, 'Seville'=5, 'Valence'=6, 'Amiens'=7, 'Besancon'=8, 'Cergy-Pontoise'=9, 'Creteil'=10,
+              #               'Lyon'=11, 'Marseille'=12, 'Mulhouse'=13, 'Nancy'=14, 'Nantes'=15, 'Rouen'=16, 'Toulouse'=17, 'Dublin'=18, 'Toyama'=19, 'Vilnius'=20,
+              #               'Luxembourg'=21, 'Lillestrom'=22, 'Kazan'=23, 'Goteborg'=24, 'Lund'=25, 'Stockholm'=26, 'Ljubljana'=27),
               selected = 1)
           ),
           column(7, align="center",
