@@ -6,6 +6,7 @@ from time import time
 import datetime
 from math import sqrt
 import pickle
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
@@ -74,14 +75,37 @@ print('Ready to start ML part !')
 
 print('ML part. I : starting Random Forest !')
 
-model_rf = RandomForestClassifier(n_estimators=50,
-                                  max_depth=20,
-                                  min_samples_split=5,
-                                  min_samples_leaf=20,
-                                  bootstrap=True, oob_score=True, criterion='gini',
-                                  random_state=321, n_jobs=4, verbose=1)
+evol_AUC=[]
+evol = np.arange(30,210,5)
+nb = len(evol)
+with tqdm(total=nb) as pbar:
+    for param in evol:
+        for i in np.arange(1,6):
+            auc = []
+            model_rf = RandomForestClassifier(n_estimators = param, #50
+                                              max_depth=20,
+                                              min_samples_split=5,
+                                              min_samples_leaf=20,
+                                              bootstrap=True, oob_score=True, criterion='gini',
+                                              #random_state=321,
+                                              n_jobs=4, verbose=1)
+            model_rf.fit(X_train, y_train)
+            pred = model_rf.predict(X_val)
+            print(confusion_matrix(y_val, pred))
+            res = roc_auc_score(y_val, pred)
+            print(res)
+            auc.append(res)
+        cv_auc = np.mean(auc)
+        print('AUC : ', cv_auc)
+        evol_AUC.append(cv_auc)
+        pbar.update()
 
-model_rf.fit(X_train, y_train)
+plt.plot(evol, evol_AUC)
+plt.title("Random Forest - evol param")
+plt.show()
+
+#evol_AUC = [0.9072688515853984, 0.9072795097255529, 0.8949231725730526, 0.8887609912070343, 0.9011066702193802, 0.9041771027622346, 0.9134363620214939, 0.9072688515853984, 0.9072741806554756, 0.9011066702193802, 0.9041984190425438, 0.8949338307132072, 0.9072741806554756, 0.9103712585487167, 0.9041984190425438, 0.9103659294786394, 0.9072741806554756, 0.8949338307132072, 0.8980149213962164, 0.9072688515853984, 0.9072795097255529, 0.9041877609023893, 0.9041930899724665, 0.9072795097255529, 0.9072795097255529, 0.9072795097255529, 0.9072795097255529, 0.9072795097255529, 0.907263522515321, 0.9041930899724665, 0.9072795097255529, 0.9041930899724665, 0.9072795097255529, 0.9041930899724665, 0.9041877609023893, 0.9103606004085621]
+
 
 # pickle.dump(model_rf, open(obj_save_path+'model_rf.p', 'wb'))
 #model_rf = pickle.load(open(obj_save_path+'model_rf.p', 'rb'))
