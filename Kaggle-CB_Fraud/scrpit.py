@@ -119,7 +119,7 @@ def verif_valid(model, X_val, y_val):
                predictions[i] = 1
             else:
                predictions[i] = 0
-    else if type(model) == svm.classes.OneClassSVM:
+    elif type(model) == svm.classes.OneClassSVM:
         predictions[predictions == 1] = 0
         predictions[predictions == -1] = 1
     if len(predictions.shape) == 2:
@@ -255,7 +255,10 @@ print('ML part. III : Adaboost, done !')
 
 print('ML part. IV : starting OneClassSVM !')
 
-model_svm = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1, random_state=321)
+model_svm = svm.OneClassSVM(nu=0.1,
+                            kernel='rbf',
+                            gamma=0.1,
+                            random_state=321)
 
 y_train_list = y_train.tolist()
 X_train_svm = X_train.iloc[[x for x in range(len(X_train)) if y_train_list[x] == 0],:]
@@ -271,10 +274,31 @@ print('ML part. IV : OneClassSVM, done !')
 
 
 
+# ----------
+# VIII. Local Outlier Factor
+# ----------
 
+print('ML part. V : starting LocalOutlierFactor !')
 
+from sklearn.neighbors import LocalOutlierFactor
 
+model_lof = LocalOutlierFactor(n_neighbors=20,
+                               algorithm='auto',
+                               leaf_size=30,
+                               metric='minkowski',
+                               p=2,
+                               metric_params=None,
+                               contamination=0.1,
+                               n_jobs=4)
 
+model_lof.fit(X_train)
+
+# pickle.dump(model_lof, open(obj_save_path+'model_lof.p', 'wb'))
+#model_lof = pickle.load(open(obj_save_path+'model_lof.p', 'rb'))
+
+verif_valid(model_lof, X_val, y_val)
+
+print('ML part. V : LocalOutlierFactor, done !')
 
 
 
