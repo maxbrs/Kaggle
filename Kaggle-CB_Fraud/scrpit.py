@@ -7,6 +7,7 @@ import datetime
 from math import sqrt
 import pickle
 import matplotlib.pyplot as plt
+from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
 from sklearn.preprocessing import StandardScaler, Imputer
@@ -118,6 +119,9 @@ def verif_valid(model, X_val, y_val):
                predictions[i] = 1
             else:
                predictions[i] = 0
+    else if type(model) == svm.classes.OneClassSVM:
+        predictions[predictions == 1] = 0
+        predictions[predictions == -1] = 1
     if len(predictions.shape) == 2:
         predictions = predictions[:, 0]
     print('Matrice de confusion :')
@@ -222,7 +226,6 @@ print('ML part. IV : LightGBM, done !')
 
 
 
-
 # ----------
 # VI. ADABOOST
 # ----------
@@ -243,6 +246,37 @@ model_adab.fit(X_train, y_train)
 verif_valid(model_adab, X_val, y_val)
 
 print('ML part. III : Adaboost, done !')
+
+
+
+# ----------
+# VII. OneClass-SVM
+# ----------
+
+print('ML part. IV : starting OneClassSVM !')
+
+model_svm = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1, random_state=321)
+
+y_train_list = y_train.tolist()
+X_train_svm = X_train.iloc[[x for x in range(len(X_train)) if y_train_list[x] == 0],:]
+
+model_svm.fit(X_train_svm)
+
+# pickle.dump(model_svm, open(obj_save_path+'model_svm.p', 'wb'))
+#model_svm = pickle.load(open(obj_save_path+'model_svm.p', 'rb'))
+
+verif_valid(model_svm, X_val, y_val)
+
+print('ML part. IV : OneClassSVM, done !')
+
+
+
+
+
+
+
+
+
 
 
 # ----------
@@ -381,6 +415,12 @@ pred_val_stack_avg = X_val_stack.mean(axis=1)
 check_predictions(pred_val_stack_avg, y_val)
 
 print('ML part. VII : Stacking Model (mean), done !')
+
+
+
+
+
+
 
 
 # ----------
