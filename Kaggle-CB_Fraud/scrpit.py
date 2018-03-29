@@ -185,8 +185,6 @@ model_xgb = xgb.XGBClassifier(base_score=0.5,
 
 model_xgb.fit(X_train, y_train)
 
-print(model_xgb)
-
 # pickle.dump(model_xgb, open(obj_save_path+'model_xgb.p', 'wb'))
 #model_xgb = pickle.load(open(obj_save_path+'model_xgb.p', 'rb'))
 
@@ -215,6 +213,7 @@ params['sub_feature'] = 0.5
 params['num_leaves'] = 10
 params['min_data'] = 50
 params['max_depth'] = 10
+
 model_lgbm = lgb.train(params, d_train, 500)
 
 # pickle.dump(model_lgbm, open(obj_save_path+'model_lgbm.p', 'wb'))
@@ -265,7 +264,7 @@ X_train_svm = X_train.iloc[[x for x in range(len(X_train)) if y_train_list[x] ==
 
 model_svm.fit(X_train_svm)
 
-# pickle.dump(model_svm, open(obj_save_path+'model_svm.p', 'wb'))
+pickle.dump(model_svm, open(obj_save_path+'model_svm.p', 'wb'))
 #model_svm = pickle.load(open(obj_save_path+'model_svm.p', 'rb'))
 
 verif_valid(model_svm, X_val, y_val)
@@ -289,14 +288,42 @@ model_lof = LocalOutlierFactor(n_neighbors=20,
                                p=2,
                                metric_params=None,
                                contamination=0.1,
-                               n_jobs=4)
+                               n_jobs=3)
 
-model_lof.fit(X_train)
+model_lof.fit(X_train, y_val)
 
 # pickle.dump(model_lof, open(obj_save_path+'model_lof.p', 'wb'))
 #model_lof = pickle.load(open(obj_save_path+'model_lof.p', 'rb'))
 
+
+def verif_valid(model, X_val, y_val):
+    if type(model) == Sequential:
+        X_val = np.array(X_val)
+    reality = y_val
+    if type(model) == LocalOutlierFactor:
+        predictions = model_lof.fit_predict(X_val)
+    else:
+        predictions = model.predict(X_val)
+    if type(model) == lgb.basic.Booster:
+        for i in range(len(predictions)):
+            if predictions[i] >= 0.5:  # threshold = 0.5
+               predictions[i] = 1
+            else:
+               predictions[i] = 0
+    elif (type(model) == svm.classes.OneClassSVM) | (type(model) == LocalOutlierFactor):
+        predictions[predictions == 1] = 0
+        predictions[predictions == -1] = 1
+    if len(predictions.shape) == 2:
+        predictions = predictions[:, 0]
+    print('Matrice de confusion :')
+    print(confusion_matrix(reality, predictions))
+    print('Métriques de précision associées :')
+    print(classification_report(reality, predictions))
+    print('Score AUC :')
+    print(roc_auc_score(reality, predictions))
+
 verif_valid(model_lof, X_val, y_val)
+
 
 print('ML part. V : LocalOutlierFactor, done !')
 
@@ -307,54 +334,54 @@ print('ML part. V : LocalOutlierFactor, done !')
 # XIII. Neural Network
 # ----------
 
-print('ML part. V : starting Neural Network !')
-
-y_train_nn = pd.get_dummies(y_train)
-y_val_nn = pd.get_dummies(y_val)
-
-def nn_model():
-    seed = 321
-    np.random.seed(seed)
-    rmsprop = RMSprop(lr=0.0001)
-    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    # kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
-    # for train, test in kfold.split(X, y):
-    model_nn = Sequential()
-    model_nn.add(Dense(50, input_shape=(30,), activation='relu'))
-    model_nn.add(Dropout(0.2))
-    model_nn.add(Dense(100, activation='relu', kernel_initializer='normal'))
-    model_nn.add(Dropout(0.3))
-    model_nn.add(Dense(2, activation='softmax'))
-    model_nn.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=rmsprop)
-
-    # Compile model
-    model_nn.compile(optimizer=rmsprop, loss='binary_crossentropy', metrics=['accuracy'])
-    return model_nn
-
-model_nn = nn_model()
-model_nn.summary()
-hist = model_nn.fit(np.array(X_train), np.array(y_train_nn),
-                    epochs=15, validation_split=0.33,
-                    shuffle=True, verbose=1)
-
-plt.plot(hist.history['loss'])
-plt.plot(hist.history['val_loss'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'valid'], loc='upper right')
-plt.show()
-
-# model_nn.save(obj_save_path+'model_nn.p')
-# model_nn = load_model(obj_save_path+'model_nn.p')
-
-loss, acc = model_nn.evaluate(np.array(X_val), np.array(y_val_nn))
-print('The accuracy on the test set is ',(acc*100),'%')
-
-
-verif_valid(model_nn, X_val, y_val)
-
-print('ML part. V : Neural Network, done !')
+#print('ML part. V : starting Neural Network !')
+#
+#y_train_nn = pd.get_dummies(y_train)
+#y_val_nn = pd.get_dummies(y_val)
+#
+#def nn_model():
+#    seed = 321
+#    np.random.seed(seed)
+#    rmsprop = RMSprop(lr=0.0001)
+#    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+#    # kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
+#    # for train, test in kfold.split(X, y):
+#    model_nn = Sequential()
+#    model_nn.add(Dense(50, input_shape=(30,), activation='relu'))
+#    model_nn.add(Dropout(0.2))
+#    model_nn.add(Dense(100, activation='relu', kernel_initializer='normal'))
+#    model_nn.add(Dropout(0.3))
+#    model_nn.add(Dense(2, activation='softmax'))
+#    model_nn.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=rmsprop)
+#
+#    # Compile model
+#    model_nn.compile(optimizer=rmsprop, loss='binary_crossentropy', metrics=['accuracy'])
+#    return model_nn
+#
+#model_nn = nn_model()
+#model_nn.summary()
+#hist = model_nn.fit(np.array(X_train), np.array(y_train_nn),
+#                    epochs=15, validation_split=0.33,
+#                    shuffle=True, verbose=1)
+#
+#plt.plot(hist.history['loss'])
+#plt.plot(hist.history['val_loss'])
+#plt.title('model accuracy')
+#plt.ylabel('accuracy')
+#plt.xlabel('epoch')
+#plt.legend(['train', 'valid'], loc='upper right')
+#plt.show()
+#
+## model_nn.save(obj_save_path+'model_nn.p')
+## model_nn = load_model(obj_save_path+'model_nn.p')
+#
+#loss, acc = model_nn.evaluate(np.array(X_val), np.array(y_val_nn))
+#print('The accuracy on the test set is ',(acc*100),'%')
+#
+#
+#verif_valid(model_nn, X_val, y_val)
+#
+#print('ML part. V : Neural Network, done !')
 
 
 # ----------
@@ -363,32 +390,46 @@ print('ML part. V : Neural Network, done !')
 
 print('ML part. VI : starting Stacking Model (Neural Network) !')
 
-
 def pred_ML(X):
     model_rf = pickle.load(open(obj_save_path+'model_rf.p', 'rb'))
-    model_xgb = pickle.load(open(obj_save_path+'model_xgb.p', 'rb'))
-    model_adab = pickle.load(open(obj_save_path+'model_adab.p', 'rb'))
     model_gradb = pickle.load(open(obj_save_path+'model_gradb.p', 'rb'))
-    model_nn = load_model(obj_save_path+'model_nn.p')
+    model_xgb = pickle.load(open(obj_save_path+'model_xgb.p', 'rb'))
+    model_lgbm = pickle.load(open(obj_save_path+'model_lgbm.p', 'rb'))
+    model_adab = pickle.load(open(obj_save_path+'model_adab.p', 'rb'))
+    model_svm = pickle.load(open(obj_save_path+'model_svm.p', 'rb'))
+#    model_nn = load_model(obj_save_path+'model_nn.p')
 
     rf = pd.DataFrame(model_rf.predict(X))
-    xgb = pd.DataFrame(model_xgb.predict(X))
-    adab = pd.DataFrame(model_adab.predict(X))
     gradb = pd.DataFrame(model_gradb.predict(X))
-    nn = pd.DataFrame(model_nn.predict(np.array(X))[:, 0])
-    X_stack = pd.concat([rf, xgb, adab, gradb, nn], axis=1)
+    xgb = pd.DataFrame(model_xgb.predict(X))
+    lgbm = pd.DataFrame(model_lgbm.predict(X))
+    adab = pd.DataFrame(model_adab.predict(X))
+    svm = pd.DataFrame(model_svm.predict(X))
+#    nn = pd.DataFrame(model_nn.predict(np.array(X))[:, 0])
+    X_stack = pd.concat([rf, gradb, xgb, lgbm, adab, svm], axis=1)
     return X_stack
 
-X_train_stack = pred_ML(X_train)
-X_val_stack = pred_ML(X_val)
-#X_test_stack = pred_ML(X_test)
+X_train_stack = pred_ML(X_train.sort_index())
+X_val_stack = pred_ML(X_val.sort_index())
+
+#y_train_nn = pd.get_dummies(y_train.sort_index())
+#y_val_nn = pd.get_dummies(y_val.sort_index())
+y_val = y_val.sort_index()
 
 def stacking_nn_model():
     seed = 321
     np.random.seed(seed)
+    rmsprop = RMSprop(lr=0.0001)
     model_nn = Sequential()
-    model_nn.add(Dense(5, input_dim=5, activation='relu', kernel_initializer='normal'))
-    model_nn.add(Dense(1, kernel_initializer='normal'))
+    model_nn.add(Dense(5, input_shape=(6,), activation='relu'))
+    model_nn.add(Dropout(0.5))
+    model_nn.add(Dense(5, activation='relu', kernel_initializer='normal'))
+    model_nn.add(Dropout(0.5))
+    model_nn.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
+    model_nn.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=rmsprop)
+    
+    # accuracy | binary_accuracy | mae | catregorical_accuracy | sparse_catregorical_accuracy
+
     # Compile model
     model_nn.compile(optimizer='adam', loss='mean_squared_error')
     return model_nn
@@ -396,7 +437,7 @@ def stacking_nn_model():
 model_stack_nn = stacking_nn_model()
 model_stack_nn.summary()
 hist = model_stack_nn.fit(np.array(X_train_stack), np.array(y_train),
-                          epochs=20, validation_split=0.33,
+                          epochs=10, validation_split=0.33,
                           shuffle=True, verbose=1)
 
 plt.plot(hist.history['loss'])
@@ -408,9 +449,44 @@ plt.legend(['train', 'valid'], loc='upper right')
 plt.show()
 
 # model_stack_nn.save(obj_save_path+'model_stack_nn.p')
-model_stack_nn = load_model(obj_save_path+'model_stack_nn.p')
+#model_stack_nn = load_model(obj_save_path+'model_stack_nn.p')
+
+
+def verif_valid(model, X_val, y_val):
+    if type(model) == Sequential:
+        X_val = np.array(X_val)
+    reality = y_val
+    predictions = model.predict(X_val)
+    if (type(model) == lgb.basic.Booster) | (type(model) == Sequential):
+        for i in range(len(predictions)):
+            if predictions[i] >= 0.5:  # threshold = 0.5
+               predictions[i] = 1
+            else:
+               predictions[i] = 0
+    elif type(model) == svm.classes.OneClassSVM:
+        predictions[predictions == 1] = 0
+        predictions[predictions == -1] = 1
+#    elif type(model) == Sequential:
+#        for i in range(len(predictions)):
+#            if predictions[i] >= 0.9975:  # threshold = 0.5
+#               predictions[i] = 1
+#            else:
+#               predictions[i] = 0
+    if len(predictions.shape) == 2:
+        predictions = predictions[:, 0]
+        
+    plt.hist(predictions)
+    plt.show()
+    print('Matrice de confusion :')
+    print(confusion_matrix(reality, predictions))
+    print('Métriques de précision associées :')
+    print(classification_report(reality, predictions))
+    print('Score AUC :')
+    print(roc_auc_score(reality, predictions))
 
 verif_valid(model_stack_nn, X_val_stack, y_val)
+
+
 
 print('ML part. VI : Stacking Model (Neural Network), done !')
 
