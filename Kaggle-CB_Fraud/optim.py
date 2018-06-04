@@ -76,14 +76,14 @@ print('Ready to start ML part !')
 print('ML part. I : starting Random Forest !')
 
 evol_AUC=[]
-evol = np.arange(30,210,5)
+evol = np.arange(10,30,2)
 nb = len(evol)
 with tqdm(total=nb) as pbar:
     for param in evol:
         for i in np.arange(1,6):
             auc = []
-            model_rf = RandomForestClassifier(n_estimators = param, #50
-                                              max_depth=20,
+            model_rf = RandomForestClassifier(n_estimators = 50,
+                                              max_depth=param, #20
                                               min_samples_split=5,
                                               min_samples_leaf=20,
                                               bootstrap=True, oob_score=True, criterion='gini',
@@ -226,16 +226,7 @@ print('ML part. III : XGBoost, done !')
 print('ML part. IV : starting LightGBM !')
 
 d_train = lgb.Dataset(X_train, label=y_train)
-params = {}
-params['learning_rate'] = 0.1
-params['boosting_type'] = 'gbdt'
-params['objective'] = 'binary'
-params['metric'] = 'binary_logloss'
-params['sub_feature'] = 0.5
-params['num_leaves'] = 10
-params['min_data'] = 50
-params['max_depth'] = 10
-model_lgbm = lgb.train(params, d_train, 500)
+
 
 # pickle.dump(model_lgbm, open(obj_save_path+'model_lgbm.p', 'wb'))
 #model_lgbm = pickle.load(open(obj_save_path+'model_lgbm.p', 'rb'))
@@ -243,6 +234,48 @@ model_lgbm = lgb.train(params, d_train, 500)
 verif_valid(model_lgbm, X_val, y_val)
 
 print('ML part. IV : LightGBM, done !')
+
+
+
+
+
+
+evol_AUC=[]
+#evol = np.arange(10,30,2)
+evol = [0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75]
+nb = len(evol)
+with tqdm(total=nb) as pbar:
+    for param in evol:
+        for i in np.arange(1,4):
+            auc = []
+            
+            params = {}
+            params['learning_rate'] = 0.1
+            params['boosting_type'] = 'gbdt'
+            params['objective'] = 'binary'
+            params['metric'] = 'binary_logloss'
+            params['sub_feature'] = 0.5
+            params['num_leaves'] = 10
+            params['min_data'] = 50
+            params['max_depth'] = 10
+            model_lgbm = lgb.train(params, d_train, 500)
+            
+#            model_lgbm.fit(X_train, y_train)
+            pred = model_lgbm.predict(X_val)
+            
+            print(confusion_matrix(y_val, pred))
+            res = roc_auc_score(y_val, pred)
+            print(res)
+            auc.append(res)
+        cv_auc = np.mean(auc)
+        print('AUC : ', cv_auc)
+        evol_AUC.append(cv_auc)
+        pbar.update()
+
+plt.plot(evol, evol_AUC)
+plt.title("LGBM - evol param")
+plt.show()
+
 
 
 
